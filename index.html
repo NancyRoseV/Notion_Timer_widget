@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Emerald Timer</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, sans-serif;
+      background: transparent;
+      color: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 8px;
+    }
+
+    .timer {
+      width: 100%;
+      max-width: 260px;
+      text-align: center;
+    }
+
+    .time {
+      font-size: 48px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -1px;
+      margin-bottom: 8px;
+      line-height: 1;
+      color: #ffffff;
+    }
+
+    .progress-container {
+      margin-bottom: 16px;
+    }
+
+    .progress-bar {
+      height: 3px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-bottom: 6px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #059669, #10b981);
+      border-radius: 2px;
+      transition: width 1s linear;
+      width: 100%;
+    }
+
+    .time-remaining {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.4);
+      font-weight: 500;
+    }
+
+    .controls {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .icon-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(255, 255, 255, 0.06);
+      color: rgba(255, 255, 255, 0.7);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .icon-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: #ffffff;
+      transform: scale(1.1);
+    }
+
+    .icon-btn:active {
+      transform: scale(0.95);
+    }
+
+    .icon-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .play-btn {
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, #059669, #10b981);
+      color: #ffffff;
+      box-shadow: 0 4px 16px rgba(5, 150, 105, 0.35);
+    }
+
+    .play-btn:hover {
+      box-shadow: 0 6px 24px rgba(5, 150, 105, 0.5);
+    }
+
+    .play-btn svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .presets {
+      display: flex;
+      gap: 6px;
+      justify-content: center;
+      margin-bottom: 12px;
+    }
+
+    .preset {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 6px;
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      background: rgba(16, 185, 129, 0.08);
+      color: #34d399;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-family: inherit;
+    }
+
+    .preset:hover {
+      background: rgba(16, 185, 129, 0.15);
+      transform: translateY(-1px);
+    }
+
+    .preset.active {
+      background: rgba(16, 185, 129, 0.25);
+      border-color: rgba(16, 185, 129, 0.5);
+      color: #6ee7b7;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 6px;
+      justify-content: center;
+      align-items: center;
+    }
+
+    input {
+      font-family: inherit;
+      font-size: 12px;
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.04);
+      color: #ffffff;
+      text-align: center;
+      width: 80px;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    input:focus {
+      border-color: #10b981;
+    }
+
+    input::placeholder {
+      color: rgba(255, 255, 255, 0.25);
+    }
+
+    .set-btn {
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 8px 16px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.06);
+      color: rgba(255, 255, 255, 0.6);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .set-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+    }
+
+    @keyframes complete {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    .complete {
+      animation: complete 0.5s ease;
+      color: #34d399;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="timer">
+    <div class="time" id="time">25:00</div>
+
+    <div class="progress-container">
+      <div class="progress-bar">
+        <div class="progress-fill" id="fill"></div>
+      </div>
+      <div class="time-remaining" id="remaining">25 minutes remaining</div>
+    </div>
+
+    <div class="presets">
+      <button class="preset" onclick="setPreset(5)">5m</button>
+      <button class="preset" onclick="setPreset(15)">15m</button>
+      <button class="preset active" onclick="setPreset(25)">25m</button>
+      <button class="preset" onclick="setPreset(45)">45m</button>
+      <button class="preset" onclick="setPreset(60)">60m</button>
+    </div>
+
+    <div class="controls">
+      <button class="icon-btn" onclick="reset()" title="Reset">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="1 4 1 10 7 10"></polyline>
+          <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+        </svg>
+      </button>
+
+      <button class="icon-btn play-btn" id="playBtn" onclick="toggleTimer()" title="Start">
+        <svg id="playIcon" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M8 5v14l11-7z"/>
+        </svg>
+        <svg id="pauseIcon" viewBox="0 0 24 24" fill="currentColor" style="display: none;">
+          <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+        </svg>
+      </button>
+
+      <button class="icon-btn" onclick="setCustom()" title="Custom time">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M12 1v6m0 6v6m4.22-10.22l4.24-4.24M6.34 6.34L2.1 2.1m17.8 17.8l-4.24-4.24M6.34 17.66l-4.24 4.24M23 12h-6m-6 0H1m20.24-4.24l-4.24 4.24M6.34 6.34l-4.24-4.24"></path>
+        </svg>
+      </button>
+    </div>
+
+    <div class="input-row" id="customInput" style="display: none;">
+      <input id="input" type="number" placeholder="Minutes" min="1">
+      <button class="set-btn" onclick="set()">Set</button>
+    </div>
+  </div>
+
+  <script>
+    let total = 25 * 60;
+    let left = total;
+    let interval = null;
+    let isRunning = false;
+
+    function show() {
+      const m = Math.floor(left / 60);
+      const s = left % 60;
+      document.getElementById("time").textContent = 
+        `${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
+
+      const pct = (left / total) * 100;
+      document.getElementById("fill").style.width = `${pct}%`;
+
+      const mins = Math.ceil(left / 60);
+      document.getElementById("remaining").textContent = 
+        left === 0 ? "Time's up!" : `${mins} minute${mins !== 1 ? 's' : ''} remaining`;
+    }
+
+    function setPreset(mins) {
+      clearInterval(interval);
+      interval = null;
+      isRunning = false;
+      total = mins * 60;
+      left = total;
+      show();
+      updatePlayButton();
+
+      document.querySelectorAll('.preset').forEach(p => p.classList.remove('active'));
+      event.target.classList.add('active');
+    }
+
+    function toggleTimer() {
+      if (isRunning) {
+        pause();
+      } else {
+        start();
+      }
+    }
+
+    function start() {
+      if (interval || left === 0) return;
+      isRunning = true;
+      updatePlayButton();
+
+      interval = setInterval(() => {
+        if (left > 0) {
+          left--;
+          show();
+        } else {
+          clearInterval(interval);
+          interval = null;
+          isRunning = false;
+          updatePlayButton();
+          document.getElementById("time").classList.add('complete');
+          setTimeout(() => {
+            document.getElementById("time").classList.remove('complete');
+          }, 500);
+        }
+      }, 1000);
+    }
+
+    function pause() {
+      clearInterval(interval);
+      interval = null;
+      isRunning = false;
+      updatePlayButton();
+    }
+
+    function reset() {
+      clearInterval(interval);
+      interval = null;
+      isRunning = false;
+      left = total;
+      show();
+      updatePlayButton();
+    }
+
+    function updatePlayButton() {
+      const playIcon = document.getElementById('playIcon');
+      const pauseIcon = document.getElementById('pauseIcon');
+      const btn = document.getElementById('playBtn');
+
+      if (isRunning) {
+        playIcon.style.display = 'none';
+        pauseIcon.style.display = 'block';
+        btn.title = 'Pause';
+      } else {
+        playIcon.style.display = 'block';
+        pauseIcon.style.display = 'none';
+        btn.title = left === 0 ? 'Reset to start' : 'Start';
+      }
+    }
+
+    function setCustom() {
+      const row = document.getElementById('customInput');
+      row.style.display = row.style.display === 'none' ? 'flex' : 'none';
+      if (row.style.display === 'flex') {
+        document.getElementById('input').focus();
+      }
+    }
+
+    function set() {
+      const v = parseInt(document.getElementById("input").value);
+      if (!v || v < 1) return;
+      clearInterval(interval);
+      interval = null;
+      isRunning = false;
+      total = v * 60;
+      left = total;
+      show();
+      updatePlayButton();
+      document.getElementById("input").value = "";
+      document.getElementById('customInput').style.display = 'none';
+      document.querySelectorAll('.preset').forEach(p => p.classList.remove('active'));
+    }
+
+    document.getElementById("input").addEventListener("keypress", e => {
+      if (e.key === "Enter") set();
+    });
+
+    show();
+  </script>
+</body>
+</html>
