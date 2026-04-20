@@ -12,6 +12,11 @@
       padding: 0;
     }
 
+    html, body {
+      width: 100%;
+      min-height: 100%;
+    }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, sans-serif;
       background: transparent;
@@ -20,13 +25,18 @@
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-      padding: 8px;
+      padding: 12px;
     }
 
     .timer {
       width: 100%;
-      max-width: 260px;
+      max-width: 320px;
       text-align: center;
+      background: #1f1f1f;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 20px;
+      padding: 24px 18px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.22);
     }
 
     .time {
@@ -61,7 +71,7 @@
 
     .time-remaining {
       font-size: 11px;
-      color: rgba(255, 255, 255, 0.4);
+      color: rgba(255, 255, 255, 0.5);
       font-weight: 500;
     }
 
@@ -78,8 +88,8 @@
       height: 44px;
       border-radius: 50%;
       border: none;
-      background: rgba(255, 255, 255, 0.06);
-      color: rgba(255, 255, 255, 0.7);
+      background: rgba(255, 255, 255, 0.08);
+      color: rgba(255, 255, 255, 0.75);
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -88,9 +98,9 @@
     }
 
     .icon-btn:hover {
-      background: rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.14);
       color: #ffffff;
-      transform: scale(1.1);
+      transform: scale(1.05);
     }
 
     .icon-btn:active {
@@ -123,6 +133,7 @@
       display: flex;
       gap: 6px;
       justify-content: center;
+      flex-wrap: wrap;
       margin-bottom: 12px;
     }
 
@@ -131,7 +142,7 @@
       font-weight: 600;
       padding: 6px 14px;
       border-radius: 6px;
-      border: 1px solid rgba(16, 185, 129, 0.2);
+      border: 1px solid rgba(16, 185, 129, 0.25);
       background: rgba(16, 185, 129, 0.08);
       color: #34d399;
       cursor: pointer;
@@ -151,7 +162,7 @@
     }
 
     .input-row {
-      display: flex;
+      display: none;
       gap: 6px;
       justify-content: center;
       align-items: center;
@@ -162,11 +173,11 @@
       font-size: 12px;
       padding: 8px 12px;
       border-radius: 6px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.05);
       color: #ffffff;
       text-align: center;
-      width: 80px;
+      width: 90px;
       outline: none;
       transition: all 0.2s ease;
     }
@@ -176,7 +187,7 @@
     }
 
     input::placeholder {
-      color: rgba(255, 255, 255, 0.25);
+      color: rgba(255, 255, 255, 0.3);
     }
 
     .set-btn {
@@ -185,15 +196,15 @@
       font-weight: 600;
       padding: 8px 16px;
       border-radius: 6px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      background: rgba(255, 255, 255, 0.06);
-      color: rgba(255, 255, 255, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.07);
+      color: rgba(255, 255, 255, 0.75);
       cursor: pointer;
       transition: all 0.15s ease;
     }
 
     .set-btn:hover {
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.12);
       color: #ffffff;
     }
 
@@ -221,11 +232,11 @@
     </div>
 
     <div class="presets">
-      <button class="preset" onclick="setPreset(5)">5m</button>
-      <button class="preset" onclick="setPreset(15)">15m</button>
-      <button class="preset active" onclick="setPreset(25)">25m</button>
-      <button class="preset" onclick="setPreset(45)">45m</button>
-      <button class="preset" onclick="setPreset(60)">60m</button>
+      <button class="preset" onclick="setPreset(5, this)">5m</button>
+      <button class="preset" onclick="setPreset(15, this)">15m</button>
+      <button class="preset active" onclick="setPreset(25, this)">25m</button>
+      <button class="preset" onclick="setPreset(45, this)">45m</button>
+      <button class="preset" onclick="setPreset(60, this)">60m</button>
     </div>
 
     <div class="controls">
@@ -245,17 +256,17 @@
         </svg>
       </button>
 
-      <button class="icon-btn" onclick="setCustom()" title="Custom time">
+      <button class="icon-btn" onclick="toggleCustomInput()" title="Custom time">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="3"></circle>
-          <path d="M12 1v6m0 6v6m4.22-10.22l4.24-4.24M6.34 6.34L2.1 2.1m17.8 17.8l-4.24-4.24M6.34 17.66l-4.24 4.24M23 12h-6m-6 0H1m20.24-4.24l-4.24 4.24M6.34 6.34l-4.24-4.24"></path>
+          <path d="M12 1v6m0 6v6m4.22-10.22l4.24-4.24M6.34 6.34L2.1 2.1m17.8 17.8l-4.24-4.24M6.34 17.66l-4.24 4.24M23 12h-6m-6 0H1"></path>
         </svg>
       </button>
     </div>
 
-    <div class="input-row" id="customInput" style="display: none;">
+    <div class="input-row" id="customInput">
       <input id="input" type="number" placeholder="Minutes" min="1">
-      <button class="set-btn" onclick="set()">Set</button>
+      <button class="set-btn" onclick="setCustomTime()">Set</button>
     </div>
   </div>
 
@@ -268,18 +279,19 @@
     function show() {
       const m = Math.floor(left / 60);
       const s = left % 60;
-      document.getElementById("time").textContent = 
-        `${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
 
-      const pct = (left / total) * 100;
+      document.getElementById("time").textContent =
+        `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+
+      const pct = total > 0 ? (left / total) * 100 : 0;
       document.getElementById("fill").style.width = `${pct}%`;
 
       const mins = Math.ceil(left / 60);
-      document.getElementById("remaining").textContent = 
-        left === 0 ? "Time's up!" : `${mins} minute${mins !== 1 ? 's' : ''} remaining`;
+      document.getElementById("remaining").textContent =
+        left === 0 ? "Time's up!" : `${mins} minute${mins !== 1 ? "s" : ""} remaining`;
     }
 
-    function setPreset(mins) {
+    function setPreset(mins, button) {
       clearInterval(interval);
       interval = null;
       isRunning = false;
@@ -288,20 +300,24 @@
       show();
       updatePlayButton();
 
-      document.querySelectorAll('.preset').forEach(p => p.classList.remove('active'));
-      event.target.classList.add('active');
+      document.querySelectorAll(".preset").forEach(p => p.classList.remove("active"));
+      button.classList.add("active");
     }
 
     function toggleTimer() {
       if (isRunning) {
         pause();
       } else {
+        if (left === 0) {
+          left = total;
+        }
         start();
       }
     }
 
     function start() {
-      if (interval || left === 0) return;
+      if (interval) return;
+
       isRunning = true;
       updatePlayButton();
 
@@ -314,9 +330,10 @@
           interval = null;
           isRunning = false;
           updatePlayButton();
-          document.getElementById("time").classList.add('complete');
+          document.getElementById("time").classList.add("complete");
+
           setTimeout(() => {
-            document.getElementById("time").classList.remove('complete');
+            document.getElementById("time").classList.remove("complete");
           }, 500);
         }
       }, 1000);
@@ -339,46 +356,50 @@
     }
 
     function updatePlayButton() {
-      const playIcon = document.getElementById('playIcon');
-      const pauseIcon = document.getElementById('pauseIcon');
-      const btn = document.getElementById('playBtn');
+      const playIcon = document.getElementById("playIcon");
+      const pauseIcon = document.getElementById("pauseIcon");
+      const btn = document.getElementById("playBtn");
 
       if (isRunning) {
-        playIcon.style.display = 'none';
-        pauseIcon.style.display = 'block';
-        btn.title = 'Pause';
+        playIcon.style.display = "none";
+        pauseIcon.style.display = "block";
+        btn.title = "Pause";
       } else {
-        playIcon.style.display = 'block';
-        pauseIcon.style.display = 'none';
-        btn.title = left === 0 ? 'Reset to start' : 'Start';
+        playIcon.style.display = "block";
+        pauseIcon.style.display = "none";
+        btn.title = "Start";
       }
     }
 
-    function setCustom() {
-      const row = document.getElementById('customInput');
-      row.style.display = row.style.display === 'none' ? 'flex' : 'none';
-      if (row.style.display === 'flex') {
-        document.getElementById('input').focus();
+    function toggleCustomInput() {
+      const row = document.getElementById("customInput");
+      row.style.display = row.style.display === "flex" ? "none" : "flex";
+
+      if (row.style.display === "flex") {
+        document.getElementById("input").focus();
       }
     }
 
-    function set() {
-      const v = parseInt(document.getElementById("input").value);
+    function setCustomTime() {
+      const v = parseInt(document.getElementById("input").value, 10);
       if (!v || v < 1) return;
+
       clearInterval(interval);
       interval = null;
       isRunning = false;
       total = v * 60;
       left = total;
+
       show();
       updatePlayButton();
+
       document.getElementById("input").value = "";
-      document.getElementById('customInput').style.display = 'none';
-      document.querySelectorAll('.preset').forEach(p => p.classList.remove('active'));
+      document.getElementById("customInput").style.display = "none";
+      document.querySelectorAll(".preset").forEach(p => p.classList.remove("active"));
     }
 
     document.getElementById("input").addEventListener("keypress", e => {
-      if (e.key === "Enter") set();
+      if (e.key === "Enter") setCustomTime();
     });
 
     show();
